@@ -5,11 +5,15 @@ const controllers = require('./controllers');
 
 const router = express.Router();
 
-router.post('/injectData', controllers.reviews.injectData);
+// router.post('/injectData', controllers.reviews.injectData);
 
 router.get('/findReview', controllers.reviews.findReview);
 
-// router.post('/reviews', controllers.reviews.addReview);
+router.put('/updateHelpfulness', controllers.reviews.updateHelpfulness)
+
+router.put('/reportReview', controllers.reviews.reportReview),
+
+router.post('/review', controllers.reviews.addReview);
 
 // router.put('/reviews/:review_id/helpful', controllers.reviews.setHelpfulReview);
 

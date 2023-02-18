@@ -1,9 +1,12 @@
 //something
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/SDC');
+mongoose.connect('mongodb://localhost/SDC-REVIEW');
 const db = mongoose.connection;
 const csvtojson = require('csvtojson')
-const csvFilePath = '/Users/nathanaeltjen/assignmentHR/rfp2212/SDC/SDC_RatingsReviews/db/test.csv'
+const ReviewSchema = require('./mongoDB.js').Review
+const PhotoSchema = require('./mongoDB.js').Photo
+const ChacSchema = require('./mongoDB.js').Chac
+const ChacReviewSchema = require('./mongoDB.js').ChacReview
 
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function () {
@@ -11,174 +14,121 @@ db.once('open', function () {
 })
 
 
-
-
-let reviewSchema = mongoose.Schema({
-  // TODO: your schema here!
-  product_id: {
-    type: Number,
-    require: true
-  },
-  review_id: {
-    type: Number,
-    require:true
-  },
-  rating: {
-    type: Number,
-    require:true
-  },
-  summary: {
-    type: String,
-    max:150,
-    require:false
-  },
-  body: {
-    type: String,
-    min:50,
-    max:1000,
-    require: true,
-  },
-  date: {
-    type: Date,
-    require: true
-  },
-  reviewer_name: {
-    type: String,
-    require: true
-  },
-  reviewer_email: {
-    type: String,
-    require: true
-  },
-  helpfulness: {
-    type: Number,
-    default: () => 0
-  },
-  recommend: {
-    type: Boolean,
-    requre:true
-  }
-});
-
-let photoSchema = mongoose.Schema({
-  id: {
-    type: Number,
-    require: true
-  },
-  review_id: {
-    type: Number,
-    require:true
-  },
-  url: {
-    type: String,
-    require:true
-  }
-})
-
-// let metaSchema = mongoose.Schema({
-//   product_id: {
-//     type: String,
-//     require: true
-//   },
-//   ratings: {
-//     type: Number,
-//     require: true
-//   },
-//   recommend: {
-//     type: Number,
-//     require:true
-//   },
-//   characteristic: {
-//     fit: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     },
-//     comfy: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     },
-//     size: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     },
-//     quality: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     },
-//     length: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     },
-//     width: {
-//       id: {type: Number, require: false},
-//       value: {type:Number}
-//     }
-//   }
-// })
-
-let Review = mongoose.model('Review', reviewSchema);
-let Photo = mongoose.model('Photo', photoSchema);
-
-// let save = (/* TODO */) => {
-//   // TODO: Your code here
-//   // This function should save a repo or repos to
-//   // the MongoDB
-// }
-
-// let injectData = async (req, res) => {
-//   csvtojson()
-//     .fromFile(csvFilePath)
-//     .then(csvData => {
-//       console.log(csvData);
-//     })
-//     .catch((err => {console.log(err)}))
-//   // TODO: Your code here
-//   // console.log(Repo.find({username: user.username}))
-//   // Repo.findOneAndDelete({username: user.username}, (err, data) => {
-//   //   console.log(data)
-//   // });
-
-//   // // Repo.findOneAndDelete({username: user.username}).exec((data) => console.log('findOnedelete', data))
-//   // // console.log(Repo.find({username: user.username}))
-//   // console.log('went here save')
-//   // new Repo(user).save()
-//   // //user has to be an object containing {username:_____, repos: [___,___,___]}
-//   // // This function should save a repo or repos to
-//   // // the MongoDB
-// }
-
-let find = (id, callback) => {
-  // Repo.find({ 'username': username}, (err, data) => {
-  //   callback(null, data[0].repos)
-  // })
+let find = (product_id, callback) => {
   console.log('itishere')
 
-  Review.find({'product_id': id})
+  ReviewSchema.find({'product_id': product_id, reported: false})
     .exec()
     .then((data) => {
       // callback(null, data[0].repos)
       let dataString = JSON.stringify(data);
       let dataPass = JSON.parse(dataString)
-      callback(null, dataPass)
-      // Promise.all(dataPass.map((review) => {
-      //   return Photo.find({review_id: review.review_id})
-      //     .exec()
-      //     .then((data) => {
-      //       review.photos = data
-      //       // console.log('photos', review)
-      //       // console.log('thisisphoto', data)
-      //     })
-      //     // .catch(() => {review.photos = []})
-      // }))
-      //   .then(() => {
-      //     callback (null, dataPass);
-      //     // console.log(dataPass)
-      //   }
-      //   )
+      // callback(null, dataPass)
+      Promise.all(dataPass.map((review) => {
+        return PhotoSchema.find({review_id: review.review_id})
+          .exec()
+          .then((data) => {
+            review.photos = data
+            // console.log('photos', review)
+            // console.log('thisisphoto', data)
+          })
+          .catch(() => {review.photos = []})
+      }))
+        .then(() => {
+          let characteristic_id = [];
+          Promise.all(dataPass.map((review) => {
+            return ChacReviewSchema.find({review_id: review.review_id})
+              .exec()
+              .then((data) => {
+                // console.log('ChacReviewData', data)
+                Promise.all(
+                  data.map((eachChac) => {
+                    let characteristic = {
+                      characteristic_id : eachChac.characteristic_id,
+                      value : eachChac.value
+                    }
+                    return ChacSchema.find({characteristic_id: eachChac.characteristic_id})
+                    .exec()
+                    .then((data) => {
+                      console.log('this is data',data)
+                      characteristic.name = data[0].characteristic_name;
+                      // console.log(characteristic)
+                      characteristic_id.push(characteristic)
+                    })
+                  })
+                )
+                .then(() => console.log('characteristicID', characteristic_id))
+                .then(() => {review.characteristic = characteristic_id})
+              })
+          })).then(() => {callback(null, dataPass)})
+        })
     })
     .catch(() => {
       callback('no data')})
 }
 
-// module.exports.injectData = injectData;
+// updateHelpfulness time can be increased by obtaining _id instead of review_id
+let updateHelpfulness = (review_id, callback) => {
+  console.log(review_id)
+  ReviewSchema.findOneAndUpdate({review_id:review_id}, {$inc: {'helpfulness': 1}})
+    .exec()
+    .then((data) => {
+      // console.log(data)
+      callback(null, data)
+    })
+    .catch((err) => {console.log(err)})
+}
+
+let reportReview = (review_id, callback) => {
+  ReviewSchema.findOneAndUpdate({review_id:review_id}, [
+    { $set: { reported: { $not: "$reported" } } }
+  ])
+  .exec()
+  .then((data) => {
+    // console.log(data)
+    callback(null, data)
+  })
+  .catch((err) => {console.log(err)})
+}
+
+let addReview = (newData, callback) => {
+  var newDatacopy = JSON.parse(JSON.stringify(newData))
+  let arrPhotos = newData.photo
+  let newDataPhotos = [];
+
+  newDatacopy.photo = [];
+
+  return new Promise ((resolve, reject) => {
+    ReviewSchema.count({}, (err, count) => {
+      console.log('here1')
+      newDatacopy.review_id = count + 1;
+      ReviewSchema.create(newDatacopy, (err, data) => {
+        if (err) {
+          reject('fail to post, data is not in the right format')
+        } else {
+          newData.review_id = newDatacopy.review_id
+          resolve(data)
+        }
+      })
+    })
+  })
+  .then((data) => {
+    if (arrPhotos.length > 0) {
+      console.log('here2')
+      Promise.all(arrPhotos.map(async (photo) => {
+        let photoInsert = {review_id: newData.review_id}
+        photoInsert.url = photo
+        return PhotoSchema.create(photoInsert)
+          .then((data) => {newDataPhotos.push(data._id)})
+      }))
+        .then(() => callback(null, newData))
+    } else {
+      callback(newData)
+    }
+  })
+  .catch((err) => {callback(err)})
+}
 module.exports.find = find;
+module.exports.updateHelpfulness = updateHelpfulness
+module.exports.reportReview = reportReview
+module.exports.addReview = addReview

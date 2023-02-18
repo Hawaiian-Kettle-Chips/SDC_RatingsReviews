@@ -34,14 +34,14 @@ let find = (product_id, callback) => {
           })
           .catch(() => {review.photos = []})
       }))
-        .then(() => {
+        .then(async () => {
           let characteristic_id = [];
-          Promise.all(dataPass.map((review) => {
+          await Promise.all(dataPass.map((review) => {
             return ChacReviewSchema.find({review_id: review.review_id})
               .exec()
-              .then((data) => {
+              .then(async (data) => {
                 // console.log('ChacReviewData', data)
-                Promise.all(
+                await Promise.all(
                   data.map((eachChac) => {
                     let characteristic = {
                       characteristic_id : eachChac.characteristic_id,

@@ -13,27 +13,24 @@ db.once('open', function () {
   console.log('we are connected')
 })
 
-
-let findReview = (product_id, callback) => {
+let averageRating = [];
+let getReview = (product_id, callback) => {
   console.log('itishere')
 
   ReviewSchema.find({'product_id': product_id, reported: false})
     .exec()
     .then(async (data) => {
-      // callback(null, data[0].repos)
       let dataString = JSON.stringify(data);
       let dataPass = JSON.parse(dataString)
-      // callback(null, dataPass)
-      await Promise.all(dataPass.map((review) => {
-        return PhotoSchema.find({review_id: review.review_id})
-          .exec()
-          .then((data) => {
-            review.photos = data
-            // console.log('photos', review)
-            // console.log('thisisphoto', data)
-          })
-          .catch(() => {review.photos = []})
-      }))
+      // await Promise.all(dataPass.map((review) => {
+      //   averageRating.push(review.rating)
+      //   return PhotoSchema.find({review_id: review.review_id})
+      //     .exec()
+      //     .then((data) => {
+      //       review.photos = data
+      //     })
+      //     .catch(() => {review.photos = []})
+      // }))
       return dataPass
         // .then(async () => {
         //   await Promise.all(dataPass.map((review) => {
@@ -72,12 +69,36 @@ let findReview = (product_id, callback) => {
       callback('no data')})
 }
 
-let findChac = (product_id, callback) => {
+let getMeta = (product_id, callback) => {
   ChacSchema.find({product_id: product_id}, (err, data) => {
     if (err) {
-      callback(err)
+      // callback(err)
     } else {
-      callback(null, data)
+      let obj = JSON.parse(JSON.stringify(data))
+      let id = [];
+      let countObj = {};
+      Promise.all(
+          obj.map((each) => {
+          countObj[each.characteristic_id] = [];
+          return ChacReviewSchema.find({characteristic_id: each.characteristic_id})
+          .then((data) => {
+            data.forEach((chac) => {
+                countObj[each.characteristic_id].push(chac.value)
+              })
+            let countLength = countObj[each.characteristic_id].length
+            countObj[each.characteristic_id] = Math.round(10*(countObj[each.characteristic_id].reduce((partialSum, a) => partialSum + a, 0))/countLength)/10
+            each.value = countObj[each.characteristic_id]
+            each.product_id = undefined
+          })
+        })
+      ).then(() => {
+        // count.reduce((partialSum, a) => partialSum + a, 0);
+        let avgRate = Math.round(10*(averageRating.reduce((partialSum, a) => partialSum + a, 0))/averageRating.length)/10
+        let objResult = {}
+        objResult.average_rating = avgRate
+        objResult.characteristics = obj
+        callback(null, objResult)
+      }).catch((err) => {console.log(err)})
     }
   })
 }
@@ -164,8 +185,8 @@ let addReview = (newData, callback) => {
     })
     .catch((err) => {callback(err)})
 }
-module.exports.findReview = findReview;
+module.exports.getReview = getReview;
 module.exports.updateHelpfulness = updateHelpfulness
 module.exports.reportReview = reportReview
 module.exports.addReview = addReview
-module.exports.findChac =findChac
+module.exports.getMeta = getMeta

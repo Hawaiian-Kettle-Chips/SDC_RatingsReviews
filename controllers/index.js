@@ -2,12 +2,6 @@ const express = require('express');
 const db = require('../db/dbModel.js')
 
 let reviews = {
-  // injectData: (req, res) => {
-  //   db.injectData(req, res)
-  //     .then(() => {console.log('success controller iD')})
-  //     .catch((err) => {console.log(err)})
-  //   console.log(req)
-  // },
   getReview: (req, res) => {
     console.log('this is body', req.query)
     db.getReview(req.query.product_id, (err, data) => {
@@ -24,7 +18,7 @@ let reviews = {
     })
   },
   getMeta: (req, res) => {
-    db.getChac(req.query.product_id, (err, data) => {
+    db.getMeta(req.query.product_id, (err, data) => {
     if (err) {
       res.status(500)
       res.end()

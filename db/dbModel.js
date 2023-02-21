@@ -16,21 +16,21 @@ db.once('open', function () {
 let averageRating = [];
 let getReview = (product_id, callback) => {
   console.log('itishere')
-
+  averageRating = [];
   ReviewSchema.find({'product_id': product_id, reported: false})
     .exec()
     .then(async (data) => {
       let dataString = JSON.stringify(data);
       let dataPass = JSON.parse(dataString)
-      // await Promise.all(dataPass.map((review) => {
-      //   averageRating.push(review.rating)
-      //   return PhotoSchema.find({review_id: review.review_id})
-      //     .exec()
-      //     .then((data) => {
-      //       review.photos = data
-      //     })
-      //     .catch(() => {review.photos = []})
-      // }))
+      await Promise.all(dataPass.map((review) => {
+        averageRating.push(review.rating)
+        return PhotoSchema.find({review_id: review.review_id})
+          .exec()
+          .then((data) => {
+            review.photos = data
+          })
+          .catch(() => {review.photos = []})
+      }))
       return dataPass
         // .then(async () => {
         //   await Promise.all(dataPass.map((review) => {
@@ -88,7 +88,7 @@ let getMeta = (product_id, callback) => {
             let countLength = countObj[each.characteristic_id].length
             countObj[each.characteristic_id] = Math.round(10*(countObj[each.characteristic_id].reduce((partialSum, a) => partialSum + a, 0))/countLength)/10
             each.value = countObj[each.characteristic_id]
-            each.product_id = undefined
+            delete each.product_id
           })
         })
       ).then(() => {

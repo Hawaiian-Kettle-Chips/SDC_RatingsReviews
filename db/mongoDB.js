@@ -4,7 +4,8 @@ let reviewSchema = mongoose.Schema({
   // TODO: your schema here!
   product_id: {
     type: Number,
-    required: true
+    required: true,
+    index:true
   },
   review_id: {
     type: Number,
@@ -40,8 +41,7 @@ let reviewSchema = mongoose.Schema({
   },
   helpfulness: {
     type: Number,
-    default: () => 0,
-    index:true
+    default: () => 0
   },
   recommend: {
     type: Boolean,
@@ -61,7 +61,8 @@ let reviewSchema = mongoose.Schema({
 let photoSchema = mongoose.Schema({
   review_id: {
     type: Number,
-    required:true
+    required:true,
+    index:true
   },
   url: {
     type: String,
@@ -76,7 +77,8 @@ let chacSchema = mongoose.Schema({
   },
   product_id: {
     type: Number,
-    required: true
+    required: true,
+    index:true
   },
   characteristic_name: {
     type: String,
@@ -87,7 +89,8 @@ let chacSchema = mongoose.Schema({
 let chacReviewSchema = mongoose.Schema({
   characteristic_id: {
     type: Number,
-    required: true
+    required: true,
+    index:true
   },
   review_id: {
     type: Number,
@@ -125,6 +128,7 @@ module.exports = {
 // db.chacreviews.find({review_id: review.review_id}).forEach(function(chacreview) {
 //   db.chacs.find({characteristic_id: chacreview.characteristic_id})
 // });
+
 // var start = new Date();
 // db.reviews.find({product_id: 1000000}).forEach(function(review) {
 //   db.photos.find({review_id: review.review_id})

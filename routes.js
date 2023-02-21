@@ -8,6 +8,7 @@ const router = express.Router();
 // router.post('/injectData', controllers.reviews.injectData);
 
 router.get('/findReview', controllers.reviews.findReview);
+router.get('/findChac', controllers.reviews.findChac);
 
 router.put('/updateHelpfulness', controllers.reviews.updateHelpfulness)
 

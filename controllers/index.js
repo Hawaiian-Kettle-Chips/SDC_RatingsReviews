@@ -10,7 +10,7 @@ let reviews = {
   // },
   findReview: (req, res) => {
     console.log('this is body', req.query)
-    db.find(req.query.product_id, (err, data) => {
+    db.findReview(req.query.product_id, (err, data) => {
       if (err) {
         console.log(err)
         res.status(500)
@@ -23,14 +23,30 @@ let reviews = {
       }
     })
   },
-  // addReview:{},
+  findChac: (req, res) => {
+    db.findChac(req.query.product_id, (err, data) => {
+    if (err) {
+      res.status(500)
+      res.end()
+    } else {
+      res.status(200)
+      res.json(data)
+      res.end()
+    }
+    })
+  },
   updateHelpfulness: (req, res) => {
     console.log(req.query)
     db.updateHelpfulness(req.query.review_id, (err, data) => {
       // console.log(data)
       // res.json(data)
-      res.status(201)
-      res.end('updated')
+      if (err) {
+        res.status(500)
+        res.end()
+      } else {
+        res.status(201)
+        res.end('updated')
+      }
     })
   },
   reportReview: (req, res) => {

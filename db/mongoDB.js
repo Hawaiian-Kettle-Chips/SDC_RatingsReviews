@@ -56,7 +56,6 @@ let reviewSchema = mongoose.Schema({
     default: () => 'null'
   },
   photo:[{type: String}],
-  characteristic: [{type: String}]
 });
 
 let photoSchema = mongoose.Schema({
@@ -111,3 +110,31 @@ module.exports = {
   Chac: Chac,
   ChacReview: ChacReview
 }
+
+// const productID = db.reviews.find({product_id: 1000000});
+// productID.explain()
+// productID.forEach(function(review) {
+//   const photos = db.photos.find({review_id: review.review_id})
+//   photos.explain()
+//   photos.forEach(function(photo) {
+//     printjson(photo);
+//   });
+// });
+
+
+// db.chacreviews.find({review_id: review.review_id}).forEach(function(chacreview) {
+//   db.chacs.find({characteristic_id: chacreview.characteristic_id})
+// });
+// var start = new Date();
+// db.reviews.find({product_id: 1000000}).forEach(function(review) {
+//   db.photos.find({review_id: review.review_id})
+
+// });
+// var end = new Date();
+// var duration = end - start;
+// print("Query time: " + duration + "ms");
+
+// db.reviews.find({product_id: 1000000}).forEach(function(review) {
+//   var photoQuery = { review_id: review.review_id };
+//   db.photos.find(photoQuery)
+// });

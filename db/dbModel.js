@@ -1,6 +1,6 @@
 //something
 const mongoose = require('mongoose');
-const uri = 'mongodb://myuser:mypassword@localhost:27017/SDC-REVIEW';
+const uri = 'mongodb://myuser:mypassword@54.185.233.240:27017/SDC-REVIEW';
 mongoose.connect(uri);
 const db = mongoose.connection;
 const ReviewSchema = require('./mongoDB.js').Review

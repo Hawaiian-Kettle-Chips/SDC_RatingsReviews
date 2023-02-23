@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uri = 'mongodb://myuser:mypassword@localhost:27017/SDC-REVIEW';
+const uri = 'mongodb://myuser:mypassword@54.185.233.240:27017/SDC-REVIEW';
 mongoose.connect(uri);
 // const redis = require('redis');
 // const redisClient = redis.createClient(6379);
@@ -9,7 +9,7 @@ mongoose.connect(uri);
 //   {
 //     user: "myuser",
 //     pwd: "mypassword",
-//     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+//     roles: [ { role: "readWrite", db: "SDC-REVIEW" } ]
 //   }
 // )
 

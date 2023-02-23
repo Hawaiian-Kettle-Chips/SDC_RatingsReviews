@@ -2,11 +2,15 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/SDC-REVIEW');
 const db = mongoose.connection;
-const csvtojson = require('csvtojson')
 const ReviewSchema = require('./mongoDB.js').Review
 const PhotoSchema = require('./mongoDB.js').Photo
 const ChacSchema = require('./mongoDB.js').Chac
 const ChacReviewSchema = require('./mongoDB.js').ChacReview
+// const client = require('../routes.js').client
+// const redis = require('redis');
+// const client = redis.createClient(6379);
+// client.connect()
+
 
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function () {
@@ -15,17 +19,17 @@ db.once('open', function () {
 
 let averageRating = [];
 let getReview = (product_id, callback) => {
-  console.log('itishere')
   averageRating = [];
+  // to use cache redis use .findCached
   ReviewSchema.find({'product_id': product_id, reported: false})
-    .exec()
     .then(async (data) => {
+      // console.log('this is data', data)
       let dataString = JSON.stringify(data);
       let dataPass = JSON.parse(dataString)
       await Promise.all(dataPass.map((review) => {
         averageRating.push(review.rating)
+        // to use cache redis use .findCached
         return PhotoSchema.find({review_id: review.review_id})
-          .exec()
           .then((data) => {
             review.photos = data
           })
@@ -64,8 +68,11 @@ let getReview = (product_id, callback) => {
         //   })).then(() => {callback(null, dataPass)})
         // })
     })
-    .then((data) => callback(null, data))
-    .catch(() => {
+    .then((data) => {
+      callback(null, data);
+      // client.set(product_id, data)
+    })
+    .catch((err) => { console.log(err)
       callback('no data')})
 }
 

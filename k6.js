@@ -5,8 +5,11 @@ export const options = {
   // vus: 10,
   // duration: '30s',
   stages: [
-    {duration: '10s', target: 1000},
-    {duration: '10m', target:1500}
+    // {duration: '1m', target: 300},
+    // {duration: '1m', target:1000},
+    {duration: '1m', target: 1800},
+    {duration: '5m', target: 2000},
+    {duration: '3m', target: 3000}
 
     // {duration: '15s', target: 200},
     // {duration:'15s', target: 00},
@@ -43,9 +46,9 @@ function getRandomIntInclusive(min, max) {
 export default function () {
   let randomID = String(getRandomIntInclusive(950000, 1000011))
   let res1 = http.get('http://localhost:8080/getReview', {product_id: randomID});
-  let res2 = http.get('http://localhost:8080/getMeta', {product_id: randomID})
+  // let res2 = http.get('http://localhost:8080/getMeta', {product_id: randomID})
   check(res1, {'status was 200': r => r.status == 200})
-  check(res2, {'status was 200': r => r.status == 200})
+  // check(res2, {'status was 200': r => r.status == 200})
   sleep(1);
 }
 

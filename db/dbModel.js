@@ -1,6 +1,7 @@
 //something
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/SDC-REVIEW');
+const uri = 'mongodb://myuser:mypassword@localhost:27017/SDC-REVIEW';
+mongoose.connect(uri);
 const db = mongoose.connection;
 const ReviewSchema = require('./mongoDB.js').Review
 const PhotoSchema = require('./mongoDB.js').Photo

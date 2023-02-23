@@ -1,8 +1,17 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/SDC-REVIEW');
+const uri = 'mongodb://myuser:mypassword@localhost:27017/SDC-REVIEW';
+mongoose.connect(uri);
 // const redis = require('redis');
 // const redisClient = redis.createClient(6379);
 // redisClient.connect()
+
+// db.createUser(
+//   {
+//     user: "myuser",
+//     pwd: "mypassword",
+//     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+//   }
+// )
 
 
 let reviewSchema = mongoose.Schema({

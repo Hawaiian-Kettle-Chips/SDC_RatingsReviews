@@ -4,4 +4,7 @@ test.csv
 reviews.csv
 summary.html
 SDC-dbs.pem
+.pem
+SDCserver1.pem
+SDCserver2.pem
 # something

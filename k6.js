@@ -45,11 +45,11 @@ function getRandomIntInclusive(min, max) {
 
 export default function () {
   let randomID = String(getRandomIntInclusive(950000, 1000011))
-  let res1 = http.get('http://localhost:8080/getReview', {product_id: randomID});
+  let res1 = http.get('http://35.91.194.135:8080/getReview', {product_id: randomID});
   // let res2 = http.get('http://localhost:8080/getMeta', {product_id: randomID})
   check(res1, {'status was 200': r => r.status == 200})
   // check(res2, {'status was 200': r => r.status == 200})
-  sleep(1);
+  // sleep(1);
 }
 
 export function handleSummary(data) {
